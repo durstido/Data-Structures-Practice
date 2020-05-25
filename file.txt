@@ -1,0 +1,14 @@
+2
+
+4
+apple 10
+banana 20
+apple 33
+pear 40
+
+5
+banana 20
+apple 100
+apple 33
+banana 40
+banana 50
