@@ -74,7 +74,7 @@ class Sol:
 		return table[n]
 
 	#return all sets in solution itertively 
-	def combination_sum(self, S, n):
+	def combination_sum1(self, S, n):
 		table = [set() for x in range(n+1)]  #create a set for each one
 
 		print(table[0].add(()))				 #have an empty array in the first set (so that when called, can actually use it; when calling a set, if nothing is in it, it basically doesn't exist)
@@ -88,6 +88,53 @@ class Sol:
 		return list(table[n])	#instead of it being a set, we'll return it as a list/array
 
 
+
+	#will return the same solution multiple times, but it works
+	def combination_sum2_rec(self, S,n):
+
+		solution=[]
+		stack=[]
+
+		def helper(S,n,m,stack):
+			print(S,n,m,stack)
+			if(n==0):
+				solution.append(list(stack))
+				return
+
+			if(n<0 or m==0):
+				return
+
+
+			stack_new = list(stack)
+			stack_new.append(S[m-1])
+			helper(S[:m-1], n-S[m-1], m-1, stack_new) #either you're using it once
+			helper(S[:m-1], n, m-1, stack)	#or you don't use it at all
+			#can't do S-S[m-1]
+
+		helper(S,n,len(S), stack)
+		return solution
+
+	def combination_sum2_iter(self, S, n):
+		table = [set() for x in range(n+1)]  #create a set for each one
+
+		print(table[0].add(()))				 #have an empty array in the first set (so that when called, can actually use it; when calling a set, if nothing is in it, it basically doesn't exist)
+
+		for coin in S:
+			for new_target in range(n-coin+1): 		#for all possible new_targets using this coin
+				exist = False
+				for path_at_new_target in table[new_target + coin]:
+					if path_at_new_target == {path_at_new_target + (coin,)}:
+						exist = True
+				if not exist:
+					table[new_target + coin] |= {paths_at_new_target + (coin,) for paths_at_new_target in table[new_target]} #{} is a set
+				#at each table[new_target+coin], we want to loop over all possible paths at table[new_target] and add curernt coin
+				#and also, we want to keep whatever other paths we had until now
+				#to combine sets a = a|b (their union) or simply a |= b
+		return list(table[n])	#instead of it being a set, we'll return it as a list/array
+
+
+
+	'''
 	def combination_sum2(self, S, n):
 		table = [set() for x in range(n+1)]  #create a set for each one
 
@@ -101,13 +148,16 @@ class Sol:
 				#and also, we want to keep whatever other paths we had until now
 				#to combine sets a = a|b (their union) or simply a |= b
 		return list(table[n])	#instead of it being a set, we'll return it as a list/array
+	'''
 
 
 
-n = 11
-S = [1,2,5]
+#n = 8
+#S = [10,1,2,7,6,1,5]
+n=8
+S=[10,1,2,7,6,1,5]
 ob = Sol()
-print(ob.combination_sum(S,n))
+print(ob.combination_sum2_iter(S,n))
 
 
 
