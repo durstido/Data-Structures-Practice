@@ -115,47 +115,35 @@ class Sol:
 		return solution
 
 	def combination_sum2_iter(self, S, n):
+		#in this case, we have to sort them.
+		#if we had 1,3,1, we'd have: 
+			#coin=1, [{()}, {(1,)}, set(), set(), set()]
+			#coin=3, [{()}, {(1,)}, set(), {(3,)}, {(1, 3)}]
+			#coin =1,[{()}, {(1,)}, {(1, 1)}, {(3,)}, {(1, 3), (3, 1)}]
+		#with 1,1,3 however we'd have:
+			#[{()}, {(1,)}, set(), set(), set()]
+			#[{()}, {(1,)}, {(1, 1)}, set(), set()]
+			#[{()}, {(1,)}, {(1, 1)}, {(3,)}, {(1, 3)}]
+		S.sort()
 		table = [set() for x in range(n+1)]  #create a set for each one
 
-		print(table[0].add(()))				 #have an empty array in the first set (so that when called, can actually use it; when calling a set, if nothing is in it, it basically doesn't exist)
+		table[0].add(())				 #have an empty array in the first set (so that when called, can actually use it; when calling a set, if nothing is in it, it basically doesn't exist)
 
 		for coin in S:
-			for new_target in range(n-coin+1): 		#for all possible new_targets using this coin
-				exist = False
-				for path_at_new_target in table[new_target + coin]:
-					if path_at_new_target == {path_at_new_target + (coin,)}:
-						exist = True
-				if not exist:
-					table[new_target + coin] |= {paths_at_new_target + (coin,) for paths_at_new_target in table[new_target]} #{} is a set
-				#at each table[new_target+coin], we want to loop over all possible paths at table[new_target] and add curernt coin
-				#and also, we want to keep whatever other paths we had until now
-				#to combine sets a = a|b (their union) or simply a |= b
-		return list(table[n])	#instead of it being a set, we'll return it as a list/array
+			#for new_target in reversed(range(n-coin+1)): 		#for all possible new_targets using this coin
+			for new_target in reversed(range(n-coin+1)):
+				table[new_target + coin] |= {paths_at_new_target + (coin,) for paths_at_new_target in table[new_target]} #{} is a set
+				#this time, we're going to go backwards:
+				#say coin=2, n=6. Our highest new_target would be 5, so we'll start at 5 and add to 7 all previous + 2 (nothing, 5 is set)
+				#we'll keep going down until n=0. Then, we'll add to n=2 {(2,)}. So now we only used 2 once.
+				#for another coin=2, n=6, when we reach n=2, we'll do target[n=4] = @2 + (,2) = {(2,2)}, so again we only used it once
+				#this way, we only use a coin once
+		return list(table[n])	#instead of it being a set, we'll return it as a list/arrays
 
-
-
-	'''
-	def combination_sum2(self, S, n):
-		table = [set() for x in range(n+1)]  #create a set for each one
-
-		print(table[0].add(()))				 #have an empty array in the first set (so that when called, can actually use it; when calling a set, if nothing is in it, it basically doesn't exist)
-
-		for coin in S:
-			for new_target in range(n-coin+1): 		#for all possible new_targets using this coin
-					if (new_target <= coin):
-						table[new_target + coin] |= {path_at_new_target + (coin,) for path_at_new_target in table[new_target]} 
-				#at each table[new_target+coin], we want to loop over all possible paths at table[new_target] and add curernt coin
-				#and also, we want to keep whatever other paths we had until now
-				#to combine sets a = a|b (their union) or simply a |= b
-		return list(table[n])	#instead of it being a set, we'll return it as a list/array
-	'''
-
-
-
-#n = 8
-#S = [10,1,2,7,6,1,5]
-n=8
-S=[10,1,2,7,6,1,5]
+n = 8
+S = [10,1,2,7,6,1,5]
+#n=6
+#S = [2,2,2,3,3]
 ob = Sol()
 print(ob.combination_sum2_iter(S,n))
 
